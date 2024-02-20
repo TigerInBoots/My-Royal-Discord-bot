@@ -15,7 +15,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
-from discord import FFmpegPCMAudio
+from discord import FFmpegPCMAudio, FFmpegAudio, FFmpegOpusAudio
 
 #importing random commands
 import random
@@ -135,7 +135,7 @@ async def say(interaction: discord.Interaction, arg: discord.Member):
     vc = await arg.voice.channel.connect()
     try:
         audio_file_path = 'C:/Users/adnbr/OneDrive/Desktop/Other/Codes/My Royal Discord bot/bully.mp3'
-        vc.play(FFmpegPCMAudio(source=audio_file_path))
+        vc.play(FFmpegPCMAudio(executable='ffmpeg', source=audio_file_path))
         while vc.is_playing():
                 time.sleep(.1)
     # script_dir = os.path.dirname(__file__)  # Get the directory of the current script

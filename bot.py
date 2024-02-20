@@ -23,7 +23,11 @@ import random
 import datetime
 import time
 
+import asyncio
+
 from pydub import AudioSegment
+
+import azure.cognitiveservices.speech as speechsdk
 
 #importing shouldGo methods
 from shouldGoMethods import *
@@ -131,18 +135,44 @@ async def say(interaction: discord.Interaction, arg: str):
 
 @bot.tree.command(name="bully")
 @app_commands.describe(arg = "Who should I bully?")
-async def say(interaction: discord.Interaction, arg: discord.Member):
+async def bully(interaction:discord.Interaction, arg: discord.Member):
+    if arg == bot.user:
+        return
+
+    voice_state = arg.voice
+    print(voice_state)
+    if voice_state is None:
+        return await interaction.response.send_message('You need to be in a voice channel to use this command', ephemeral=True)
+
+    speech_config = speechsdk.SpeechConfig(subscription=os.getenv('SPEECH_KEY'), region=os.getenv('SPEECH_REGION'))
+    speech_config.speech_synthesis_voice_name='en-GB-OliverNeural'
+    file_name = "bully2.mp3"
+    file_config = speechsdk.audio.AudioOutputConfig(filename=file_name)
+    speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=file_config)
+
+    if arg.name == "m_clarke": text = f"Haha Emily, you're so short and oh... so... bitchless!"
+    elif arg.name == "calamity_starr": text = f"Haha Jona, you're a little twink!"
+    elif arg.name == "waterkipp": text = f"Haha Dane, you're a fucking giraffe!"
+    elif arg.name == "tigerinboots": text = f"You're so cool!"
+    else: text = f"Haha {arg.nick}, you're so short!"
+    result = speech_synthesizer.speak_text_async(text).get()
+    # Check result
+    if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
+        print("Speech synthesized for text [{}], and the audio was saved to [{}]".format(text, file_name))
+    elif result.reason == speechsdk.ResultReason.Canceled:
+        cancellation_details = result.cancellation_details
+        print("Speech synthesis canceled: {}".format(cancellation_details.reason))
+        if cancellation_details.reason == speechsdk.CancellationReason.Error:
+            print("Error details: {}".format(cancellation_details.error_details))
+
+    await interaction.response.send_message(f'{arg.nick} has been bullied.', ephemeral=True)
+
     vc = await arg.voice.channel.connect()
-    try:
-        audio_file_path = 'C:/Users/adnbr/OneDrive/Desktop/Other/Codes/My Royal Discord bot/bully.mp3'
-        vc.play(FFmpegPCMAudio(executable='ffmpeg', source=audio_file_path))
-        while vc.is_playing():
-                time.sleep(.1)
-    # script_dir = os.path.dirname(__file__)  # Get the directory of the current script
-    # audio_file_path = os.path.join(script_dir, "bully.mp3")  # Join the directory with the audio file name
-    # vc.play(AudioSegment.from_file(audio_file_path))
-    finally:
-        await vc.disconnect()
+    audio_file_path = 'C:/Users/adnbr/OneDrive/Desktop/Other/Codes/My Royal Discord bot/bully2.mp3'
+    vc.play(FFmpegPCMAudio(executable='ffmpeg', source=audio_file_path))
+    while vc.is_playing():
+        await asyncio.sleep(.1)
+    await vc.disconnect()
 
 #event when a new message appears
 @bot.event
@@ -197,9 +227,9 @@ async def on_message(message):
         line1 = ""
         line2 = ""
         if randNum == 1:
-            line1 = f'*You hear a tiny gremlin named {message.author.name} say:*'
+            line1 = f'*You hear a tiny gremlin named {message.author.nick} say:*'
         elif randNum == 2:
-            line1 = f'*You hear a tiny gremlin named {message.author.name} shout:*'
+            line1 = f'*You hear a tiny gremlin named {message.author.nick} shout:*'
         if message.content != "" and 'https://' not in message.content:
             line2 = '\n> "%s"' %(message.content)
         await message.channel.send(line1 + line2)

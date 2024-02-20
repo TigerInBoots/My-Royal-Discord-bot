@@ -153,6 +153,7 @@ async def bully(interaction:discord.Interaction, arg: discord.Member):
     if arg.name == "m_clarke": text = f"Haha Emily, you're so short and oh... so... bitchless!"
     elif arg.name == "calamity_starr": text = f"Haha Jona, you're a little twink!"
     elif arg.name == "waterkipp": text = f"Haha Dane, you're a fucking giraffe!"
+    elif arg.name == "oxx_cass_xxo": text = f"It's ok Cass, I'm sure your lean isn't too bad for you!"
     elif arg.name == "tigerinboots": text = f"You're so cool!"
     else: text = f"Haha {arg.nick}, you're so short!"
     result = speech_synthesizer.speak_text_async(text).get()

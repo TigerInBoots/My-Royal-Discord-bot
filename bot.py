@@ -160,7 +160,7 @@ async def bully(interaction:discord.Interaction, arg: discord.Member, custom_ins
     file_config = speechsdk.audio.AudioOutputConfig(filename=file_name)
     speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=file_config)
 
-    if custom_insult != "" and arg.name != "tigerinboots": text = custom_insult
+    if custom_insult != "" and arg.name != "tigerinboots": text = f"Hey {arg.nick}! " + custom_insult
     elif arg.name == "m_clarke": text = f"Haha Emily, you're so short and oh... so... bitchless!"
     elif arg.name == "calamity_starr": text = f"Haha Jona, you're a little avian twink cuck!"
     elif arg.name == "waterkipp": text = f"Haha Dane, you're a fucking giraffe!"

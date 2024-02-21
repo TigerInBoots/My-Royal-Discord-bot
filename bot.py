@@ -55,10 +55,14 @@ async def on_ready():
     bullyMode = None
     while bullyMode == None:
         setToBully = input("Set to bully mode? y/n ")
-        if setToBully == 'y' or 'Y':
+        if setToBully in ['y', 'Y']:
             bullyMode = True
             bullyModeFile.write(str(bullyMode))
-        elif setToBully == 'n' or 'N':
+            while setToBully not in ["a", "t", "b"]:
+                setToBully = input("Audio, text, or both? a/t/b ")
+                if setToBully in ["a", "t", "b"]:
+                    bullyModeFile.write("\n"+str(setToBully))
+        elif setToBully in ['n', 'N']:
             bullyMode = False
             bullyModeFile.write(str(bullyMode))
     bullyModeFile.close()
@@ -139,10 +143,17 @@ async def bully(interaction:discord.Interaction, arg: discord.Member):
     if arg == bot.user:
         return
 
+    bullyModeFile = open("bullyMode.txt", "r")
+    bullyModeFile.readline()
+    bullyModeFileLine2 = bullyModeFile.readline()
+
+    if bullyModeFileLine2 not in ["a", "b"]:
+        return await interaction.response.send_message('Audio bully mode is not on.', ephemeral=True)
+
     voice_state = arg.voice
     print(voice_state)
     if voice_state is None:
-        return await interaction.response.send_message('You need to be in a voice channel to use this command', ephemeral=True)
+        return await interaction.response.send_message('The victim needs to be in a voice channel for this command.', ephemeral=True)
 
     speech_config = speechsdk.SpeechConfig(subscription=os.getenv('SPEECH_KEY'), region=os.getenv('SPEECH_REGION'))
     speech_config.speech_synthesis_voice_name='en-GB-OliverNeural'
@@ -151,10 +162,10 @@ async def bully(interaction:discord.Interaction, arg: discord.Member):
     speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=file_config)
 
     if arg.name == "m_clarke": text = f"Haha Emily, you're so short and oh... so... bitchless!"
-    elif arg.name == "calamity_starr": text = f"Haha Jona, you're a little twink!"
+    elif arg.name == "calamity_starr": text = f"Haha Jona, you're a little avian twink cuck!"
     elif arg.name == "waterkipp": text = f"Haha Dane, you're a fucking giraffe!"
     elif arg.name == "oxx_cass_xxo": text = f"It's ok Cass, I'm sure your lean isn't too bad for you!"
-    elif arg.name == "tigerinboots": text = f"You're so cool!"
+    elif arg.name == "tigerinboots": text = f"You're so cool Adrien!"
     else: text = f"Haha {arg.nick}, you're so short!"
     result = speech_synthesizer.speak_text_async(text).get()
     # Check result
@@ -187,8 +198,9 @@ async def on_message(message):
     await bot.process_commands(message)
     
     bullyModeFile = open("bullyMode.txt", "r")
-    bullyModeFileLine = bullyModeFile.readline()
-    bullyMode = bool(bullyModeFileLine)
+    bullyModeFileLine1 = bullyModeFile.readline()
+    bullyMode = bool(bullyModeFileLine1)
+    bullyModeFileLine2 = bullyModeFile.readline()
 
     messageGuild = message.guild.id
     ranMemFile = open("ranMem.txt", "r")
@@ -223,7 +235,7 @@ async def on_message(message):
                 logFile.close()
                 return
 
-    if message.author.name in BULLY and bullyMode == True:
+    if message.author.name in BULLY and bullyMode == True and bullyModeFileLine2 in ["t", "b"]:
         randNum = random.randint(1,2)
         line1 = ""
         line2 = ""

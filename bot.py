@@ -151,7 +151,6 @@ async def bully(interaction:discord.Interaction, arg: discord.Member):
         return await interaction.response.send_message('Audio bully mode is not on.', ephemeral=True)
 
     voice_state = arg.voice
-    print(voice_state)
     if voice_state is None:
         return await interaction.response.send_message('The victim needs to be in a voice channel for this command.', ephemeral=True)
 

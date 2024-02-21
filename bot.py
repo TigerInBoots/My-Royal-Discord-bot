@@ -170,7 +170,7 @@ async def bully(interaction:discord.Interaction, arg: discord.Member, custom_ins
     result = speech_synthesizer.speak_text_async(text).get()
     # Check result
     if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
-        print("\nSpeech synthesized for text [{}], and the audio was saved to [{}]".format(text, file_name))
+        print("\nSpeech synthesized for text [{}] written by [{}], and the audio was saved to [{}]".format(text, interaction.user.name, file_name))
     elif result.reason == speechsdk.ResultReason.Canceled:
         cancellation_details = result.cancellation_details
         print("\nSpeech synthesis canceled: {}".format(cancellation_details.reason))

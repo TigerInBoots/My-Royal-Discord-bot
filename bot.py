@@ -139,7 +139,7 @@ async def say(interaction: discord.Interaction, arg: str):
 
 @bot.tree.command(name="bully")
 @app_commands.describe(arg = "Who should I bully?")
-async def bully(interaction:discord.Interaction, arg: discord.Member):
+async def bully(interaction:discord.Interaction, arg: discord.Member, custom_insult: str=""):
     if arg == bot.user:
         return
 
@@ -160,7 +160,8 @@ async def bully(interaction:discord.Interaction, arg: discord.Member):
     file_config = speechsdk.audio.AudioOutputConfig(filename=file_name)
     speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=file_config)
 
-    if arg.name == "m_clarke": text = f"Haha Emily, you're so short and oh... so... bitchless!"
+    if custom_insult != "" and arg.name != "tigerinboots": text = custom_insult
+    elif arg.name == "m_clarke": text = f"Haha Emily, you're so short and oh... so... bitchless!"
     elif arg.name == "calamity_starr": text = f"Haha Jona, you're a little avian twink cuck!"
     elif arg.name == "waterkipp": text = f"Haha Dane, you're a fucking giraffe!"
     elif arg.name == "oxx_cass_xxo": text = f"It's ok Cass, I'm sure your lean isn't too bad for you!"

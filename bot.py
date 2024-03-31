@@ -136,12 +136,42 @@ async def say(interaction: discord.Interaction, arg: str):
 #     ranMemFile.write("%s;%s\n" %(arg,ctx.guild.id))
 #     ranMemFile.close()
 #     await ctx.send(f'You added a temporary Royal with the username: {arg}')
+    
+@bot.tree.command(name="toggle", description="Toggle my access to the vc you're in.")
+async def toggle(interaction: discord.Interaction):
+
+    if interaction.user.voice is None:
+        return await interaction.response.send_message('You need to be in a voice channel for this command.', ephemeral=True)
+
+    bullyToggle = "Unbulliable"
+    xBullyFile = open("xBullyChannels.txt", "r")
+    xBullyFileRead = xBullyFile.readlines()
+    if str(xBullyFileRead).find(str(interaction.user.voice.channel)) != -1:
+        xBullyFileNew = [x for x in xBullyFileRead if x != f"{str(interaction.user.voice.channel)}\n"]
+        xBullyFile.close()
+        xBullyFile = open("xBullyChannels.txt", "w")
+        xBullyFile.truncate()
+        xBullyFile.write(''.join(xBullyFileNew))
+        bullyToggle = "Bulliable"
+
+    else:
+        xBullyFile.close()
+        xBullyFile = open("xBullyChannels.txt", "a")
+        xBullyFile.write(f"{str(interaction.user.voice.channel)}\n")
+    xBullyFile.close()
+    return await interaction.response.send_message(f'Your vc will now be {bullyToggle}.', ephemeral=True)
+
 
 @bot.tree.command(name="bully")
 @app_commands.describe(arg = "Who should I bully?")
-async def bully(interaction:discord.Interaction, arg: discord.Member, custom_insult: str=""):
+async def bully(interaction:discord.Interaction, arg: discord.Member, custom_insult: str="", full_custom: bool=False):
     if arg == bot.user:
         return
+    
+    xBullyFile = open("xBullyChannels.txt", "r")
+    xBullyFileRead = xBullyFile.readlines()
+    if str(xBullyFileRead).find(str(interaction.user.voice.channel)) != -1:
+        return await interaction.response.send_message('Error: This channel is not available to be bullied.', ephemeral=True)
 
     bullyModeFile = open("bullyMode.txt", "r")
     bullyModeFile.readline()
@@ -160,7 +190,13 @@ async def bully(interaction:discord.Interaction, arg: discord.Member, custom_ins
     file_config = speechsdk.audio.AudioOutputConfig(filename=file_name)
     speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=file_config)
 
-    if custom_insult != "" and arg.name != "tigerinboots": text = f"Hey {arg.nick}! " + custom_insult
+    if full_custom:
+        if custom_insult != "" and (arg.name != "tigerinboots" or interaction.user.name == "tigerinboots"): text = custom_insult
+        else: 
+            await interaction.response.send_message(f'Error:\nYou attempted to create a custom insult without a custom message.', ephemeral=True)
+            return
+
+    elif custom_insult != "" and (arg.name != "tigerinboots" or interaction.user.name == "tigerinboots"): text = f"Hey {arg.nick}! " + custom_insult
     elif arg.name == "m_clarke": text = f"Haha Emily, you're so short and oh... so... bitchless!"
     elif arg.name == "calamity_starr": text = f"Haha Jona, you're a little avian twink cuck!"
     elif arg.name == "waterkipp": text = f"Haha Dane, you're a fucking giraffe!"
@@ -188,7 +224,7 @@ async def bully(interaction:discord.Interaction, arg: discord.Member, custom_ins
     await vc.disconnect()
 
 @bot.tree.command(name="kill")
-@app_commands.describe(arg = "Who should I kill?", message = "What shuld I tell them?")
+@app_commands.describe(arg = "Who should I kill?", message = "What should I tell them?")
 @app_commands.checks.has_role(1216137638944313685)
 async def kill(interaction:discord.Interaction, arg: discord.Member, message: str=""):
     if arg == (bot.user or interaction.user):
@@ -204,7 +240,7 @@ async def kill(interaction:discord.Interaction, arg: discord.Member, message: st
     file_config = speechsdk.audio.AudioOutputConfig(filename=file_name)
     speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=file_config)
 
-    text = f"Hey {arg.nick}! " + message + "\nBang!"
+    text = f"Hey {arg.nick}! " + message + "\nGet banged!"
 
     result = speech_synthesizer.speak_text_async(text).get()
     # Check result
@@ -225,7 +261,6 @@ async def kill(interaction:discord.Interaction, arg: discord.Member, message: st
         await asyncio.sleep(.1)
     await arg.move_to(None)
     await vc.disconnect()
-    
 
 #event when a new message appears
 @bot.event

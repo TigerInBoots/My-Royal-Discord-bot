@@ -262,6 +262,50 @@ async def kill(interaction:discord.Interaction, arg: discord.Member, message: st
     await arg.move_to(None)
     await vc.disconnect()
 
+@bot.tree.command(name="roulette")
+@app_commands.describe(arg = "Who should I roulette?", message = "What should I tell them?")
+@app_commands.checks.has_role(1216137638944313685)
+async def roulette(interaction:discord.Interaction, arg: discord.Member, message: str=""):
+    if arg == (bot.user or interaction.user):
+        return
+
+    voice_state = arg.voice
+    if voice_state is None:
+        return await interaction.response.send_message('The victim needs to be in a voice channel for this command.', ephemeral=True)
+
+    speech_config = speechsdk.SpeechConfig(subscription=os.getenv('SPEECH_KEY'), region=os.getenv('SPEECH_REGION'))
+    speech_config.speech_synthesis_voice_name='en-GB-OliverNeural'
+    file_name = "bully2.mp3"
+    file_config = speechsdk.audio.AudioOutputConfig(filename=file_name)
+    speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=file_config)
+
+    text = f"Hey {arg.nick}! " + message + "\nGood Luck!"
+
+    result = speech_synthesizer.speak_text_async(text).get()
+    # Check result
+    if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
+        print("\nSpeech synthesized for text [{}] written by [{}], and the audio was saved to [{}]".format(text, interaction.user.name, file_name))
+    elif result.reason == speechsdk.ResultReason.Canceled:
+        cancellation_details = result.cancellation_details
+        print("\nSpeech synthesis canceled: {}".format(cancellation_details.reason))
+        if cancellation_details.reason == speechsdk.CancellationReason.Error:
+            print("Error details: {}".format(cancellation_details.error_details))
+
+    await interaction.response.send_message(f'{arg.nick} has been spun.', ephemeral=True)
+
+    vc = await arg.voice.channel.connect()
+    audio_file_path = 'C:/Users/adnbr/OneDrive/Desktop/Other/Codes/My Royal Discord bot/bully2.mp3'
+    vc.play(FFmpegPCMAudio(executable='ffmpeg', source=audio_file_path))
+    while vc.is_playing():
+        await asyncio.sleep(.1)
+    ogChannel = arg.voice.channel
+    for x in range(6):
+        channel = arg.guild.voice_channels[random.randint(0,len(arg.guild.voice_channels)-1)]
+        await arg.move_to(channel)
+        time.sleep(1)
+    await arg.move_to(ogChannel)
+    await vc.disconnect()
+
 #event when a new message appears
 @bot.event
 async def on_message(message):

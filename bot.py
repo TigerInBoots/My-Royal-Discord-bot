@@ -117,11 +117,6 @@ async def on_ready():
 async def hello(interaction: discord.Interaction):
     await interaction.response.send_message(f"Hey {interaction.user.mention}!", ephemeral=True)
 
-@bot.tree.command(name="say")
-@app_commands.describe(arg = "What should I say?")
-async def say(interaction: discord.Interaction, arg: str):
-    await interaction.response.send_message(f"{interaction.user.name} said: '{arg}'")
-
 # @bot.tree.command(name="addtemproyal")
 # @app_commands.describe(arg = "Which user should be added?")
 # async def addtemproyal(interaction: discord.Interaction, arg : str):
@@ -170,7 +165,7 @@ async def bully(interaction:discord.Interaction, arg: discord.Member, custom_ins
     
     xBullyFile = open("xBullyChannels.txt", "r")
     xBullyFileRead = xBullyFile.readlines()
-    if str(xBullyFileRead).find(str(interaction.user.voice.channel)) != -1:
+    if str(xBullyFileRead).find(str(arg.voice.channel)) != -1:
         return await interaction.response.send_message('Error: This channel is not available to be bullied.', ephemeral=True)
 
     bullyModeFile = open("bullyMode.txt", "r")
@@ -305,6 +300,14 @@ async def roulette(interaction:discord.Interaction, arg: discord.Member, message
         time.sleep(1)
     await arg.move_to(ogChannel)
     await vc.disconnect()
+
+@bot.tree.command(name="say",description="Speak command, only for Adrien.")
+async def say(interaction:discord.Interaction, arg:str=""):
+    if interaction.user.name == "tigerinboots":
+        await interaction.channel.send(arg)
+        return await interaction.response.send_message("I have spoken.", ephemeral=True)
+    return await interaction.response.send_message("You're not Adrien, this won't work for you.", ephemeral=True)
+
 
 #event when a new message appears
 @bot.event

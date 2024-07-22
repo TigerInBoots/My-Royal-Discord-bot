@@ -124,13 +124,6 @@ async def hello(interaction: discord.Interaction):
 #     ranMemFile.write("%s;%s\n" %(arg,interaction.guild.id))
 #     ranMemFile.close()
 #     await interaction.response.send_message(f'You added a temporary Royal with the username: {arg}')
-
-# @bot.command
-# async def addTempRoyal(ctx, arg):
-#     ranMemFile = open("ranMem.txt", "a")
-#     ranMemFile.write("%s;%s\n" %(arg,ctx.guild.id))
-#     ranMemFile.close()
-#     await ctx.send(f'You added a temporary Royal with the username: {arg}')
     
 @bot.tree.command(name="toggle", description="Toggle my access to the vc you're in.")
 async def toggle(interaction: discord.Interaction):
@@ -286,7 +279,8 @@ async def roulette(interaction:discord.Interaction, arg: discord.Member, message
         if cancellation_details.reason == speechsdk.CancellationReason.Error:
             print("Error details: {}".format(cancellation_details.error_details))
 
-    await interaction.response.send_message(f'{arg.nick} has been spun.', ephemeral=True)
+    channelAmount = random.randint(5,25)
+    await interaction.response.send_message(f'{arg.nick} has been spun {channelAmount} times.', ephemeral=True)
 
     vc = await arg.voice.channel.connect()
     audio_file_path = 'C:/Users/adnbr/OneDrive/Desktop/Other/Codes/My Royal Discord bot/bully2.mp3'
@@ -294,10 +288,14 @@ async def roulette(interaction:discord.Interaction, arg: discord.Member, message
     while vc.is_playing():
         await asyncio.sleep(.1)
     ogChannel = arg.voice.channel
-    for x in range(6):
-        channel = arg.guild.voice_channels[random.randint(0,len(arg.guild.voice_channels)-1)]
+    lastChannel = arg.voice.channel
+    channel = arg.voice.channel
+    for x in range(channelAmount):
+        while channel == lastChannel:
+            channel = arg.guild.voice_channels[random.randint(0,len(arg.guild.voice_channels)-1)]
+        lastChannel = channel
         await arg.move_to(channel)
-        time.sleep(1)
+        time.sleep(0.25)
     await arg.move_to(ogChannel)
     await vc.disconnect()
 

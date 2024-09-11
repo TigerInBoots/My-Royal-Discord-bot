@@ -2,8 +2,8 @@
 TODO List:
 
 Make commands not be fancy message'd.
-Implement pictures to work.
 Log all changed information.
+Allow replies with text bullying
 '''
 
 
@@ -205,7 +205,7 @@ async def bully(interaction:discord.Interaction, arg: discord.Member, custom_ins
     await interaction.response.send_message(f'{arg.nick} has been bullied.', ephemeral=True)
 
     vc = await arg.voice.channel.connect()
-    audio_file_path = 'C:/Users/adnbr/OneDrive/Desktop/Other/Codes/My Royal Discord bot/bully2.mp3'
+    audio_file_path = 'C:/Users/adnbr/OneDrive/Desktop/Other/Codes/My Royal Discord bot/audio/bully2.mp3'
     vc.play(FFmpegPCMAudio(executable='ffmpeg', source=audio_file_path))
     while vc.is_playing():
         await asyncio.sleep(.1)
@@ -243,7 +243,7 @@ async def kill(interaction:discord.Interaction, arg: discord.Member, message: st
     await interaction.response.send_message(f'{arg.nick} has a laser dot on their forehead.', ephemeral=True)
 
     vc = await arg.voice.channel.connect()
-    audio_file_path = 'C:/Users/adnbr/OneDrive/Desktop/Other/Codes/My Royal Discord bot/bully2.mp3'
+    audio_file_path = 'C:/Users/adnbr/OneDrive/Desktop/Other/Codes/My Royal Discord bot/audio/bully2.mp3'
     vc.play(FFmpegPCMAudio(executable='ffmpeg', source=audio_file_path))
     while vc.is_playing():
         await asyncio.sleep(.1)
@@ -283,7 +283,7 @@ async def roulette(interaction:discord.Interaction, arg: discord.Member, message
     await interaction.response.send_message(f'{arg.nick} has been spun {channelAmount} times.', ephemeral=True)
 
     vc = await arg.voice.channel.connect()
-    audio_file_path = 'C:/Users/adnbr/OneDrive/Desktop/Other/Codes/My Royal Discord bot/bully2.mp3'
+    audio_file_path = 'C:/Users/adnbr/OneDrive/Desktop/Other/Codes/My Royal Discord bot/audio/bully2.mp3'
     vc.play(FFmpegPCMAudio(executable='ffmpeg', source=audio_file_path))
     while vc.is_playing():
         await asyncio.sleep(.1)
